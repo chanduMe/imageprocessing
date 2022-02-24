@@ -1,5 +1,7 @@
 package io.swagger.api;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +31,7 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,16 +53,28 @@ public class UploadfileApiController implements UploadfileApi {
 
     public ResponseEntity<Resource> uploadfilePost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true,schema=@Schema()) @RequestParam(value="operations", required=true)  Object operations,@Parameter(description = "file detail") @Valid @RequestPart("file") MultipartFile fileName) {
         String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
+        if (accept != null) {
             try {
+
+                log.info("operations" + operations.toString());
+                JSONObject jsonObject = new JSONObject(operations.toString());
+                Iterator<?> iterator = jsonObject.keys();
+                while (iterator.hasNext()) {
+                    Object key = iterator.next();
+                    Object value = jsonObject.get(key.toString());
+                    log.info("Key = " + key.toString() + "Value = " + value.toString());
+                }
+
                 return new ResponseEntity<Resource>(objectMapper.readValue("\"\"", Resource.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
                 return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 
-        return new ResponseEntity<Resource>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<Resource>(HttpStatus.OK);
     }
 
 }
