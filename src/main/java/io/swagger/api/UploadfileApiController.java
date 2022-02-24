@@ -106,7 +106,7 @@ public class UploadfileApiController implements UploadfileApi {
                         ImageGrayScale grayScaleNew = new ImageGrayScale();
                         grayScaleNew.Execute(inFileName, inFileName);
                     } else {
-                        return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+                        //return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
                     }
                 }
 
