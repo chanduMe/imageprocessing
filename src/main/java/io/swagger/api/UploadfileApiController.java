@@ -63,15 +63,19 @@ public class UploadfileApiController implements UploadfileApi {
                                                    @Parameter(description = "file detail") @Valid @RequestPart("file") MultipartFile fileName) {
         String accept = request.getHeader("Accept");
         log.info("Operations = " + operations.toString() + "On file = ", fileName.getOriginalFilename());
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 
-        String inFileName = "/Users/cd/Documents/project/" + timeStamp + "chandu.png";
+        //String inFileName = timeStamp + "chandu.png";
 
         if (accept != null) {
             try {
                 log.info("Chandu - About to process the file:");
 
-                File file = new File(inFileName);
+                String timeStamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+                File tempDirectory = new File(System.getProperty("java.io.tmpdir"));
+                File file = new File(tempDirectory.getAbsolutePath() + File.separator + timeStamp + "newFile.png");
+                //file file = new File(inFileName);
+                String inFileName = file.getAbsolutePath();
+                log.info("File path = " + inFileName);
                 fileName.transferTo(file);
 
                 log.info("operations" + operations.toString());
@@ -114,6 +118,7 @@ public class UploadfileApiController implements UploadfileApi {
                 final ByteArrayResource inputStream = new ByteArrayResource(Files.readAllBytes(Paths.get(inFileName)));
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.IMAGE_PNG);
+                file.delete();
                 return new ResponseEntity<Resource>(inputStream, headers, HttpStatus.OK);
 
             } catch (IOException e) {
